@@ -21,7 +21,7 @@ Vif is a Javascript library for building user interface.
 ### npm
 
 ```
-$ npm install --save vif vif-dom
+$ npm install --save vif
 ```
 To use vif with jsx you will need to add [babel-plugin-transform-react-jsx](https://www.npmjs.com/package/babel-plugin-transform-react-jsx) to your `.babelrc` file with the following configuration:
 ```json
