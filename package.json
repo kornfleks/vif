@@ -1,6 +1,6 @@
 {
   "name": "vif",
-  "version": "0.0.1-alpha.0",
+  "version": "0.0.1-alpha.1",
   "description": "A Javascript library for building user interface.",
   "main": "lib/index.js",
   "module": "es/index.js",
