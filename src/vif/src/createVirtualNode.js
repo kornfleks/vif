@@ -8,7 +8,7 @@ export default function createVirtualNode(name, props, partial, _props, _childre
         isGhost: false,
         isOpen: false,
         isText: false,
-        lifecycles: {},
+        lifecycle: {},
         _children,
         _props,
         ...partial

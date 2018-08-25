@@ -1,7 +1,7 @@
 
 export default function smart(options) {
     const {
-        lifecycles,
+        lifecycle,
         actions,
         state
     } = options;
@@ -10,7 +10,7 @@ export default function smart(options) {
         return {
             isSmart: typeof actions === 'object',
             name: Component,
-            lifecycles,
+            lifecycle,
             actions,
             state
         }

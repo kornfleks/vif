@@ -1,6 +1,6 @@
 
 export function mountComponent(component) {
-    const { onMount } = component.lifecycles
+    const { onMount } = component.lifecycle
     if (onMount) {
         onMount({
             props: component.props,
@@ -10,7 +10,7 @@ export function mountComponent(component) {
 }
 
 export function unmountComponent(component) {
-    const { onUnmount } = component.lifecycles
+    const { onUnmount } = component.lifecycle
     if (onUnmount) {
         onUnmount({
             props: component.props,
@@ -20,7 +20,7 @@ export function unmountComponent(component) {
 }
 
 export function updateComponent(lastComponent, nextComponent) {
-    const { onUpdate } = nextComponent.lifecycles
+    const { onUpdate } = nextComponent.lifecycle
     if (onUpdate) {
         onUpdate({
             lastProps: lastComponent.props,

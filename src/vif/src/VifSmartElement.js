@@ -42,7 +42,7 @@ export function wireSmartNode(virtualNode) {
         isSmart,
         actions,
         state,
-        lifecycles,
+        lifecycle,
         name
     } = virtualNode.name;
 
@@ -59,8 +59,8 @@ export function wireSmartNode(virtualNode) {
         finalName = name
     }
 
-    if (typeof lifecycles === 'object') {
-        virtualNode.lifecycles = lifecycles
+    if (typeof lifecycle === 'object') {
+        virtualNode.lifecycle = lifecycle
     }
 
     virtualNode.state = {}
