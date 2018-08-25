@@ -30,7 +30,7 @@ To use vif with jsx you will need to add [babel-plugin-transform-react-jsx](http
     [
       "transform-react-jsx",
       {
-          "pragma": "Vif"
+          "pragma": "Vif.createElement"
       }
     ]
   ]
