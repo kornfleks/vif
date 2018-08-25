@@ -16,7 +16,9 @@ Vif is a Javascript library for building user interface.
 
 ### boilerplate
 
-*The boilerplate is not ready yet. It will provide a pre-configured node project with Webpack and Babel.*
+*The boilerplate is in minimal state but still usable.*
+
+[vif-starter](https://github.com/Kornflexx/vif-starter)
 
 ### npm
 
@@ -248,6 +250,7 @@ const lifecycle = {
 Vif is still in an early development state. Some of the API are going to be changed and others will be implemented.
 
 - [x] Implement asynchronous actions
+- [ ] Add SVG support
 - [ ] Add lerna
 - [ ] Define proper lifecyle API
 - [ ] Implement DOM element references API
