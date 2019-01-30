@@ -1,7 +1,6 @@
 import { applyChildren } from './VifChildren'
 import { wireSmartNode } from './VifSmartElement'
 import createVirtualNode from './createVirtualNode'
-import { copy } from '../../vif-utils'
 
 export function createElement(name, props) {
     props = props || {}
@@ -13,17 +12,13 @@ export function createElement(name, props) {
     const virtualNode = createVirtualNode(
         name,
         props,
-        {},
-        copy(props),
-        copy(children)
+        {}
     )
-
     for (const propKey in props) {
         if (propKey !== 'key') {
             virtualNode.props[propKey] = props[propKey]
         }
     }
-
     if (typeof name === 'function') {
         virtualNode.isOpen = children.length > 0
         virtualNode.isComponent = true

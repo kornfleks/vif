@@ -31,18 +31,10 @@ function createChild(node, container, nextElement) {
         return
     }
     if (node.isComponent) {
-        const childProp = Vif.Children.getChildrenProp(node._props.children, node._children)
-        const props = copy(node.props)
-        props.children = childProp
-
-        const child = node.name(props, node.state)
-        const children = [child]
-
-        Vif.Children.applyChildren(children)
-
-        node.children = children
+        Vif.Children.getComponentChildren(node)
+        console.log('rendering component', node.children)
         node._ref = createChild(
-            child,
+            node.children[0],
             container,
             nextElement,
             true
@@ -80,8 +72,7 @@ function patchChildren(lastNode, nextNode, element, previousElement) {
         const nextChild = nextChildren[i]
         const lastChild = lastKeys[nextChild.key]
         const {
-            isGhost,
-            isComponent
+            isGhost
         } = nextChild
 
         if (lastChildren[i] && nextChild.key !== lastChildren[i].key) {
@@ -96,7 +87,6 @@ function patchChildren(lastNode, nextNode, element, previousElement) {
                     nextChild
                 )
             }
-
             if (shouldReorder) {
                 if (lastChildElement) {
                     VifScheduler.scheduleTask(
@@ -133,6 +123,7 @@ function patchChildren(lastNode, nextNode, element, previousElement) {
                 element,
                 siliblingElement
             )
+            nextChild._ref = newElement
             lastChildElement = newElement
         } else {
             nextKeys[nextChild.key] = nextChild
@@ -144,7 +135,6 @@ function patchChildren(lastNode, nextNode, element, previousElement) {
             )
         }
     }
-
     for (let i = 0; i < lastChildren.length; i++) {
         const lastChild = lastChildren[i]
         if (!nextKeys[lastChild.key] && !lastChild.isGhost && !lastChild.isComponent) {
@@ -166,38 +156,50 @@ export default function patch(lastNode, nextNode, forced) {
     const nextProps = nextNode.props
 
     if (nextNode.isComponent) {
-        if (!forced) {
-            nextNode.state = lastNode.state
-            if (areNodeEquals(lastNode, nextNode)) {
-                nextNode.children[0] = lastNode.children[0]
-                return;
-            }
-        }
 
-        const childProp = Vif.Children.getChildrenProp(
-            nextNode._props.children,
-            nextNode._children
-        )
-        const props = { ...nextNode.props, children: childProp }
-        const child = nextNode.name(props, nextNode.state)
-        const children = [child]
-
-        Vif.Children.applyChildren(children, null)
-        nextNode.children = children
-        patch(
-            lastNode.children[0],
-            nextNode.children[0],
-            false
-        )
-        updateComponent(lastNode, nextNode)
-    } else {
-        const element = lastNode._ref
-        if (lastNode.isText !== nextNode.isText) {
+        if (!lastNode.isComponent) {
+            const element = lastNode._ref
             nextNode._ref = createChild(
                 nextNode,
                 element.parentElement,
                 element.nextSibling
-            );
+            )
+            VifScheduler.scheduleTask(
+                effects.remove,
+                element.parentElement,
+                element
+            )
+        } else {
+            if (!lastNode.children[0]) {
+                console.log('lastnode not rendered', copy(lastNode))
+            } 
+            if (!forced) {
+                nextNode.state = lastNode.state
+                if (areNodeEquals(lastNode, nextNode)) {
+                    nextNode.children[0] = lastNode.children[0]
+                    return;
+                }
+            }
+            Vif.Children.getComponentChildren(nextNode);
+            patch(
+                lastNode.children[0],
+                nextNode.children[0],
+                true
+            )
+            updateComponent(lastNode, nextNode)
+        }
+    } else {
+        const element = lastNode._ref
+        if (lastNode.isComponent || lastNode.isText !== nextNode.isText) {
+            console.log('lastnode is a component', lastNode.isComponent === true)
+            nextNode._ref = createChild(
+                nextNode,
+                element.parentElement,
+                element.nextSibling
+            )
+            if (lastNode.isComponent) {
+                removeChildren(lastNode)
+            }
             VifScheduler.scheduleTask(
                 effects.remove,
                 element.parentElement,
@@ -209,7 +211,6 @@ export default function patch(lastNode, nextNode, forced) {
                 element,
                 nextNode.value
             )
-            return;
         } else {
             for (const propKey in getDiffObject(lastProps, nextProps)) {
                 const lastValue = lastProps[propKey]
@@ -233,6 +234,11 @@ export default function patch(lastNode, nextNode, forced) {
     }
 
     function transferProperties() {
+        if (!nextNode.isComponent) {
+            lastNode.state = undefined;
+            lastNode.nextState = undefined;
+            lastNode.isComponent = undefined;
+        }
         for (const key in nextNode) {
             lastNode[key] = nextNode[key]
         }

@@ -1,7 +1,6 @@
 import VifReconcilier from '../../vif-reconciler'
-import { getDiffObject } from '../../vif-utils'
+import { getDiffObject, copy } from '../../vif-utils'
 import Vif from '../../vif'
-const { Children } = Vif;
 
 function eventProxy(event) {
     event.currentTarget.events[event.type](event)
@@ -35,15 +34,15 @@ export function updateAttribute(element, name, lastValue, nextValue) {
                 : {}
 
             for (const propKey in diffObject) {
-                if (propKey[0] === '-') {
-                    if (diffObject[propKey]) {
-                        element.style.setProperty(propKey, nextStyle[propKey])
-                    } else {
-                        element.style.removeProperty(propKey)
-                    }
+                if (diffObject[propKey]) {
+                    element.style.setProperty(propKey, nextStyle[propKey])
                 } else {
-                    element.style[propKey] = nextStyle[propKey]
+                    element.style.removeProperty(propKey)
                 }
+            }
+        } else if (name === '_setHTML') {
+            if (nextValue !== lastValue) {
+                element.innerHTML = nextValue || ''
             }
         } else {
             if (nextValue === undefined) {
@@ -98,20 +97,12 @@ export function render(node, container, patching, nextElement, ref) {
             }
         }
     } else if (node.isComponent) {
-        const childProp = Children.getChildrenProp(
-            node._props.children,
-            node._children
-        )
-        const props = { ...node.props, children: childProp }
-        const child = node.name(props, node.state)
-        const children = [child]
-        Children.applyChildren(children)
-        node.children = children
+        Vif.Children.getComponentChildren(node)
         if (!patching) {
             VifReconcilier.lifecycle.mountComponent(node)
         }
-        node._ref = render(
-            child,
+        return node._ref = render(
+            node.children[0],
             container,
             patching,
             nextElement

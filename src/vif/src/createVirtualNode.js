@@ -1,5 +1,5 @@
 
-export default function createVirtualNode(name, props, partial, _props, _children) {
+export default function createVirtualNode(name, props, partial) {
     return {
         name,
         key: props.key,
@@ -9,8 +9,7 @@ export default function createVirtualNode(name, props, partial, _props, _childre
         isOpen: false,
         isText: false,
         lifecycle: {},
-        _children,
-        _props,
+        __vif: true,
         ...partial
     }
 }

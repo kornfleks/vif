@@ -1,4 +1,4 @@
-import { isFalsyNode } from '../../vif-utils'
+import { isFalsyNode, copy } from '../../vif-utils'
 import createVirtualNode from './createVirtualNode'
 
 function applyChild(child, key) {
@@ -31,6 +31,8 @@ export function applyChildren(children) {
                 applyChildren(children[i]),
                 `__vif-${i}`
             )
+        } else if (typeof child === 'function') {
+            
         } else {
             children[i] = applyChild(
                 children[i],
@@ -41,8 +43,24 @@ export function applyChildren(children) {
     return children
 }
 
-export function getChildrenProp(childrenProps, children) {
-    if (children.length > 0) return children
-    if (childrenProps) return childrenProps
+function getChildrenProp(node) {
+    if (node.children.length > 0) return node.children
+    if (node.props.children instanceof Array) return node.props.children
     return []
+}
+
+
+export function getComponentChildren(node) {
+    const childProp = getChildrenProp(node)
+    const props = copy(node.props)
+    props.children = childProp
+                
+    for (const propKey in props) {
+        if (props[propKey] && props[propKey].__vif) {
+            props[propKey] = copy(props[propKey])
+        }
+    }
+    
+    const child = node.name(props, node.state)
+    return node.children = applyChildren([child])
 }
